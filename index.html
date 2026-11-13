@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Taller de Herramientas de Calidad</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  /* Layout: una columna de trabajo; barra de pasos arriba; la "hoja" del reporte siempre es papel claro */
+  --bg:#f3f6f5; --surface:#ffffff; --ink:#172625; --muted:#5b6d6b; --line:#d5dedc;
+  --accent:#0b6b5c; --accent-ink:#ffffff; --soft:#e2efec; --warn:#8a5a00; --warn-bg:#fbf1d6;
+  --display:"Archivo","Helvetica Neue",Arial,sans-serif; --body:"IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#101918;--surface:#182423;--ink:#e6efed;--muted:#9bb0ad;--line:#2c3d3b;--accent:#4fc3ae;--accent-ink:#06211c;--soft:#1f3431;--warn:#f0c66a;--warn-bg:#3a2f12;color-scheme:dark}
+}
+:root[data-theme="dark"]{--bg:#101918;--surface:#182423;--ink:#e6efed;--muted:#9bb0ad;--line:#2c3d3b;--accent:#4fc3ae;--accent-ink:#06211c;--soft:#1f3431;--warn:#f0c66a;--warn-bg:#3a2f12;color-scheme:dark}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font:16px/1.5 var(--body)}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;margin:0}
+button{font:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.top{position:sticky;top:0;z-index:5;background:var(--surface);border-bottom:1px solid var(--line)}
+.top-in{max-width:980px;margin:0 auto;padding:10px 16px;display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between}
+.brand{font:700 17px var(--display);background:none;border:0;color:var(--ink);padding:0}
+.steps{display:flex;gap:6px;font-size:13px;color:var(--muted)}
+.steps span{padding:3px 10px;border-radius:99px;border:1px solid var(--line)}
+.steps span.on{background:var(--accent);color:var(--accent-ink);border-color:var(--accent);font-weight:600}
+main{max-width:980px;margin:0 auto;padding:20px 16px 80px;display:flex;flex-direction:column;gap:18px}
+.card{background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:16px}
+.lead{color:var(--muted);max-width:65ch;margin:6px 0 0}
+.btn{border:1px solid var(--accent);background:var(--accent);color:var(--accent-ink);border-radius:8px;padding:10px 16px;font-weight:600}
+.btn.sec{background:transparent;color:var(--accent)}
+.btn.ghost{background:transparent;border-color:var(--line);color:var(--ink);font-weight:500}
+.btn.sm{padding:6px 10px;font-size:14px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.tools{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:10px}
+.tool{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);display:flex;flex-direction:column;gap:4px}
+.tool:hover{border-color:var(--accent)}
+.tool b{font-family:var(--display);font-size:16px}
+.tool small{color:var(--muted);font-size:13.5px;line-height:1.35}
+.tag{align-self:flex-start;font-size:11.5px;letter-spacing:.04em;text-transform:uppercase;color:var(--accent);font-weight:600}
+.opts{display:flex;flex-direction:column;gap:8px;margin-top:14px}
+.opt{text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:12px 14px;color:var(--ink)}
+.opt:hover{border-color:var(--accent);background:var(--soft)}
+.bar{height:6px;background:var(--line);border-radius:9px;overflow:hidden;margin:10px 0 14px}
+.bar i{display:block;height:100%;background:var(--accent)}
+.rank{display:flex;flex-direction:column;gap:10px}
+.rank .card.best{border:2px solid var(--accent)}
+.why{color:var(--muted);font-size:14px;margin:4px 0 10px}
+.banner{background:var(--warn-bg);color:var(--warn);border-radius:8px;padding:10px 12px;display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;font-size:14.5px}
+.banner .btn{border-color:var(--warn);color:var(--warn);background:transparent}
+form{display:flex;flex-direction:column;gap:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+.f{display:flex;flex-direction:column;gap:4px}
+.f.full{grid-column:1/-1}
+.f label{font-size:13px;font-weight:600;color:var(--muted)}
+input,select,textarea{font:inherit;color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:7px;padding:8px 10px;width:100%}
+textarea{min-height:64px;resize:vertical}
+.sec-h{font:700 15px var(--display);margin-top:6px;padding-top:12px;border-top:1px solid var(--line)}
+.item{border:1px solid var(--line);border-radius:8px;padding:10px;display:flex;flex-direction:column;gap:8px}
+.item-h{display:flex;justify-content:space-between;align-items:center;font-size:13px;color:var(--muted);font-weight:600}
+.x{background:none;border:0;color:var(--muted);font-size:14px;padding:2px 6px;text-decoration:underline}
+.list{display:flex;flex-direction:column;gap:8px}
+.hint{font-size:13.5px;color:var(--muted);margin:0}
+.toast{position:fixed;left:50%;bottom:20px;transform:translateX(-50%);background:var(--ink);color:var(--bg);padding:10px 16px;border-radius:8px;font-size:14.5px;max-width:90vw;z-index:9}
+.toast[hidden]{display:none}
+.sheet-wrap{overflow-x:auto}
+.saved{display:flex;flex-direction:column;gap:6px}
+.sv{display:flex;flex-wrap:wrap;gap:4px 12px;justify-content:space-between;align-items:center;text-align:left;background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:10px 12px;color:var(--ink)}
+.sv:hover{border-color:var(--accent)}.sv small{color:var(--muted)}
+@media print{.top,.row,.hint,.toast{display:none!important}main{padding:0;max-width:none}body{background:#fff}}
+</style>
+</head>
+<body>
+<div class="top"><div class="top-in">
+  <button class="brand" id="home" type="button">Taller de Herramientas de Calidad</button>
+  <div class="steps" id="steps"></div>
+</div></div>
+<main id="app"></main>
+<div class="toast" id="toast" hidden role="status"></div>
+
+<script>
+/* Pega aquí la URL /exec de tu Apps Script para que todos los dispositivos queden conectados. */
+const SHEETS_URL='https://script.google.com/macros/s/AKfycby91QBolbxp5K4B3OxlRwtOdf7hf1v7TzvbEPUsUZomPq-CxgW43RCdGwejF1oyYTE4/exec';
+
+/* ---------- utilidades ---------- */
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const cut=(s,n)=>{s=String(s||'');return s.length>n?s.slice(0,n-1)+'…':s};
+const wrap=(s,n,max)=>{const w=String(s||'').trim().split(/\s+/),L=[];let c='';for(const x of w){if(c&&(c+' '+x).length>n){L.push(c);c=x}else c=c?c+' '+x:x}if(c)L.push(c);if(max&&L.length>max){L.length=max;L[max-1]=cut(L[max-1],n-1)+'…'}return L};
+const num=v=>{const n=parseFloat(String(v??'').replace(',','.'));return isFinite(n)?n:null};
+const filled=v=>String(v??'').trim()!=='';
+const pct=(a,b)=>b?Math.round(a/b*100):0;
+const fmt=n=>Number.isInteger(n)?String(n):n.toFixed(1);
+const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const dmy=s=>{const m=/^(\d{4})-(\d\d)-(\d\d)$/.exec(s||'');return m?`${m[3]}/${m[2]}/${m[1]}`:(s||'')};
+const sc=svg=>`<div class="sc">${svg}</div>`;
+const none=t=>`<p class="vac">${t}</p>`;
+const S15=['—','1','2','3','4','5'];
+const S110=['—','1','2','3','4','5','6','7','8','9','10'];
+
+/* ---------- estilos de la hoja (también viajan en el archivo descargado) ---------- */
+const PAPER_CSS=`
+.paper{background:#fff;color:#1b2b2b;font:14px/1.45 "IBM Plex Sans","Segoe UI",Roboto,Arial,sans-serif;padding:22px;border:1px solid #cfd8d6;border-radius:6px;min-width:0}
+.paper h1{font:700 20px Archivo,Arial,sans-serif;margin:2px 0}
+.paper h2{font:700 15px Archivo,Arial,sans-serif;margin:20px 0 8px;padding-bottom:4px;border-bottom:2px solid #0b6b5c}
+.paper h3{font:700 13.5px Archivo,Arial,sans-serif;margin:14px 0 4px}
+.paper p{margin:4px 0}.paper ul{margin:4px 0;padding-left:20px}.paper li{margin:3px 0}
+.paper .ph{display:flex;flex-wrap:wrap;gap:10px 24px;justify-content:space-between;border-bottom:1px solid #cfd8d6;padding-bottom:10px}
+.paper .pk{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:#0b6b5c;font-weight:600}
+.paper .pt{color:#4a5b5a}
+.paper .pm{display:grid;grid-template-columns:auto auto;gap:1px 10px;font-size:12.5px;margin:0;align-content:start}
+.paper .pm dt{color:#5b6d6b}.paper .pm dd{margin:0;font-weight:600}
+.paper .sc{overflow-x:auto}.paper svg{display:block;width:100%;height:auto}
+.paper svg.wide{min-width:680px}.paper svg.mid{max-width:560px;margin:0 auto}
+.paper table{border-collapse:collapse;width:100%;font-size:12.5px;margin:8px 0}
+.paper th{background:#eef3f2;color:#1b2b2b;text-align:left;font-weight:600;border:1px solid #cfd8d6;padding:5px 7px}
+.paper td{border:1px solid #cfd8d6;padding:5px 7px;vertical-align:top}
+.paper td.n,.paper th.n{text-align:right;font-variant-numeric:tabular-nums}
+.paper .tw{overflow-x:auto}
+.paper .vac{color:#6a7a78;font-style:italic;border:1px dashed #cfd8d6;padding:14px;border-radius:6px}
+.paper .chip{display:inline-block;border:1px solid #9db0af;border-radius:99px;padding:0 8px;font-size:11.5px;font-weight:600;white-space:nowrap}
+.paper .k3{stroke:#1f3a3a;stroke-width:3}.paper .k2{stroke:#4d6b6a;stroke-width:2}.paper .k1{stroke:#9db0af;stroke-width:1}
+.paper .fk{fill:#1f3a3a}.paper .hd{fill:#e6f0ee;stroke:#1f3a3a;stroke-width:1.5}.paper .ct{fill:#fff;stroke:#4d6b6a;stroke-width:1.2}
+.paper text{font-family:"IBM Plex Sans","Segoe UI",Arial,sans-serif;fill:#1b2b2b}
+.paper .tb{font-size:12px;font-weight:600}.paper .ts{font-size:11px;fill:#33403f}.paper .tv{font-weight:700;fill:#0b5d4e}.paper .tm{font-size:10.5px;fill:#5b6d6b}
+.paper .chain{display:flex;flex-direction:column;align-items:stretch;gap:0;max-width:640px;margin:0 auto}
+.paper .bx{border:1.5px solid #4d6b6a;border-radius:8px;padding:8px 12px;background:#fff}
+.paper .bx small{display:block;color:#5b6d6b;font-size:11.5px}
+.paper .bx.p0{background:#eef3f2}.paper .bx.rz{border:2.5px solid #0b6b5c;background:#e6f0ee}.paper .bx.cm{border-style:dashed}
+.paper .ar{text-align:center;color:#4d6b6a;font-size:12px;font-weight:600;padding:3px 0}
+.paper .q4{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.paper .q{border:1.5px solid #4d6b6a;border-radius:8px;padding:10px 12px;min-width:0}
+.paper .q .L{font:700 22px Archivo,Arial,sans-serif;color:#0b6b5c;margin-right:6px}
+.paper .q b.t{font:700 14px Archivo,Arial,sans-serif}
+.paper .q p{font-size:12.5px;overflow-wrap:anywhere}
+.paper .q.inc{border-style:dashed;border-color:#b98a1a}
+.paper .cyc{text-align:center;font-size:12px;color:#4d6b6a;font-weight:600;margin:6px 0}
+.paper .hb{display:grid;grid-template-columns:90px 1fr 60px;gap:6px;align-items:center;font-size:12.5px;margin:3px 0}
+.paper .hb i{display:block;height:14px;background:#9fc4bc;border:1px solid #4d6b6a;border-radius:3px}
+.paper .a3{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.paper .a3 .q b.t{display:block;margin-bottom:2px}
+.paper .stack{display:flex;height:22px;border:1px solid #4d6b6a;border-radius:4px;overflow:hidden;margin:6px 0}
+.paper .stack i{display:block;height:100%}
+.paper .lg{display:flex;flex-wrap:wrap;gap:4px 14px;font-size:12px}.paper .lg i{display:inline-block;width:11px;height:11px;border:1px solid #4d6b6a;margin-right:4px;vertical-align:-1px}
+.paper .al li{color:#7a4b00}
+.paper .firm{display:grid;grid-template-columns:1fr 1fr;gap:30px;margin-top:44px;font-size:12.5px;text-align:center}
+.paper .firm div{border-top:1px solid #1b2b2b;padding-top:4px}
+.paper .pie{margin-top:14px;font-size:11px;color:#6a7a78}
+@media(max-width:560px){.paper{padding:14px}.paper .q4,.paper .a3{grid-template-columns:1fr}}
+@media print{.paper{border:0;padding:0}}
+`;
+
+/* ---------- gráficos ---------- */
+const CATS=[['metodo','Método'],['personal','Personal'],['insumos','Material e insumos'],['equipo','Equipo'],['medicion','Medición'],['entorno','Entorno']];
+function gIshikawa(d){
+  const W=920,H=470,sy=235;let s=`<svg class="wide" viewBox="0 0 ${W} ${H}" role="img" aria-label="Diagrama de Ishikawa">`;
+  s+=`<line x1="30" y1="${sy}" x2="737" y2="${sy}" class="k3"/><path d="M736 ${sy-9} l16 9 -16 9z" class="fk"/><rect x="754" y="${sy-62}" width="160" height="124" rx="8" class="hd"/>`;
+  const pl=wrap(d.problema||'Problema',23,6);pl.forEach((l,i)=>s+=`<text x="834" y="${sy-(pl.length-1)*8+i*16+4}" text-anchor="middle" class="tb">${esc(l)}</text>`);
+  CATS.forEach(([id,name],i)=>{
+    const top=i<3,x0=255+(i%3)*230,ex=x0-95,ey=top?58:H-58;
+    s+=`<line x1="${x0}" y1="${sy}" x2="${ex}" y2="${ey}" class="k2"/><rect x="${ex-72}" y="${top?ey-30:ey}" width="144" height="30" rx="15" class="ct"/><text x="${ex}" y="${top?ey-10:ey+20}" text-anchor="middle" class="tb">${esc(name)}</text>`;
+    const cs=(d['c_'+id]||[]).filter(c=>filled(c.t)&&c.v!=='Descartada'),sh=cs.slice(0,6);
+    sh.forEach((c,j)=>{const t=(j+1)/(sh.length+1),px=ex+(x0-ex)*t,py=ey+(sy-ey)*t;
+      s+=`<line x1="${px.toFixed(1)}" y1="${py.toFixed(1)}" x2="${(px-140).toFixed(1)}" y2="${py.toFixed(1)}" class="k1"/><text x="${(px-6).toFixed(1)}" y="${(py-4).toFixed(1)}" text-anchor="end" class="ts${c.v==='Validada'?' tv':''}">${esc((c.v==='Validada'?'✔ ':'')+cut(c.t,24))}</text>`});
+    if(cs.length>6)s+=`<text x="${ex+80}" y="${top?ey-10:ey+20}" class="tm">+${cs.length-6} más</text>`;
+  });
+  return sc(s+'</svg>')+`<p class="tm" style="font-size:11.5px;color:#5b6d6b">✔ causa validada con datos. Las causas descartadas no se dibujan.</p>`+ishTable(d);
+}
+function ishTable(d){let r='';CATS.forEach(([id,n])=>(d['c_'+id]||[]).filter(c=>filled(c.t)).forEach(c=>r+=`<tr><td>${esc(n)}</td><td>${esc(c.t)}</td><td><span class="chip">${esc(c.v||'Pendiente')}</span></td></tr>`));
+  return r?`<div class="tw"><table><tr><th>Categoría</th><th>Causa</th><th>Estado</th></tr>${r}</table></div>`:''}
+
+function gPorques(d){
+  const pq=(d.pq||[]).filter(x=>filled(x.p));if(!filled(d.problema)&&!pq.length)return none('Escribe el problema y el primer porqué para ver la cadena.');
+  let h=`<div class="chain"><div class="bx p0"><small>Problema</small><b>${esc(d.problema||'—')}</b></div>`;
+  pq.forEach((x,i)=>h+=`<div class="ar">▼ ¿Por qué? (${i+1})</div><div class="bx">${esc(x.p)}${filled(x.e)?`<small>Evidencia: ${esc(x.e)}</small>`:'<small>Sin evidencia registrada</small>'}</div>`);
+  if(filled(d.raiz))h+=`<div class="ar">▼ Causa raíz</div><div class="bx rz"><small>Causa raíz</small><b>${esc(d.raiz)}</b></div>`;
+  if(filled(d.contra))h+=`<div class="ar">▼ Contramedida</div><div class="bx cm"><small>Contramedida</small>${esc(d.contra)}</div>`;
+  return h+'</div>';
+}
+
+function parData(d){const it=(d.items||[]).map(x=>({c:String(x.c||'').trim(),f:num(x.f)})).filter(x=>x.c&&x.f>0).sort((a,b)=>b.f-a.f);const tot=it.reduce((a,x)=>a+x.f,0);let ac=0,hit=false;it.forEach(x=>{ac+=x.f;x.p=x.f/tot*100;x.cum=ac/tot*100;x.vital=!hit;if(x.cum>=80)hit=true});return{it,tot}}
+function gPareto(d){
+  const {it,tot}=parData(d);if(!it.length)return none('Captura al menos una categoría con su frecuencia.');
+  const W=920,H=440,L=62,R=858,T=34,B=330,n=it.length,bw=(R-L)/n,y=v=>B-(v/tot)*(B-T);
+  let s=`<svg class="wide" viewBox="0 0 ${W} ${H}" role="img" aria-label="Diagrama de Pareto">`;
+  [0,25,50,75,100].forEach(p=>{const yy=B-(p/100)*(B-T);s+=`<line x1="${L}" y1="${yy}" x2="${R}" y2="${yy}" stroke="#e3e9e8"/><text x="${L-8}" y="${yy+4}" text-anchor="end" class="tm">${fmt(Math.round(tot*p/100*10)/10)}</text><text x="${R+8}" y="${yy+4}" class="tm">${p}%</text>`});
+  const y80=B-.8*(B-T);s+=`<line x1="${L}" y1="${y80}" x2="${R}" y2="${y80}" stroke="#a04a3a" stroke-dasharray="6 4" stroke-width="1.3"/><text x="${R-4}" y="${y80-5}" text-anchor="end" class="tm" style="fill:#a04a3a;font-weight:600">80%</text>`;
+  let pts='';const ch=Math.max(6,Math.floor(bw/6.3));
+  it.forEach((x,i)=>{const bx=L+i*bw+bw*.14,w=bw*.72,cx=L+i*bw+bw/2,by=y(x.f);
+    s+=`<rect x="${bx.toFixed(1)}" y="${by.toFixed(1)}" width="${w.toFixed(1)}" height="${(B-by).toFixed(1)}" fill="${x.vital?'#7fb5aa':'#d9e2e0'}" stroke="#4d6b6a"/><text x="${cx.toFixed(1)}" y="${(by-5).toFixed(1)}" text-anchor="middle" class="tb">${fmt(x.f)}</text>`;
+    wrap(x.c,ch,3).forEach((l,j)=>s+=`<text x="${cx.toFixed(1)}" y="${B+16+j*13}" text-anchor="middle" class="ts">${esc(l)}</text>`);
+    const py=B-(x.cum/100)*(B-T);pts+=`${cx.toFixed(1)},${py.toFixed(1)} `;
+    s+=`<circle cx="${cx.toFixed(1)}" cy="${py.toFixed(1)}" r="3.5" fill="#1f3a3a"/><text x="${cx.toFixed(1)}" y="${(py-8).toFixed(1)}" text-anchor="middle" class="tm">${Math.round(x.cum)}%</text>`});
+  s+=`<polyline points="${pts}" fill="none" stroke="#1f3a3a" stroke-width="1.8"/><line x1="${L}" y1="${B}" x2="${R}" y2="${B}" class="k2"/>`;
+  s+=`<text x="${L}" y="${H-28}" class="tm">Barras oscuras: los pocos vitales que acumulan el 80%. Línea: porcentaje acumulado.</text></svg>`;
+  let r='';it.forEach(x=>r+=`<tr><td>${esc(x.c)}</td><td class="n">${fmt(x.f)}</td><td class="n">${x.p.toFixed(1)}%</td><td class="n">${x.cum.toFixed(1)}%</td><td>${x.vital?'<span class="chip">Vital</span>':''}</td></tr>`);
+  return sc(s)+`<div class="tw"><table><tr><th>Categoría</th><th class="n">Frecuencia</th><th class="n">%</th><th class="n">% acumulado</th><th></th></tr>${r}<tr><th>Total</th><th class="n">${fmt(tot)}</th><th></th><th></th><th></th></tr></table></div>`;
+}
+
+const PH=[['P','Planear',['problema','objetivo','indicador','acciones']],['H','Hacer',['ejecutado','periodo']],['V','Verificar',['resultado','verif']],['A','Actuar',['decision','estandar','lecciones']]];
+const PL={problema:'Problema',objetivo:'Objetivo',indicador:'Indicador',acciones:'Acciones planeadas',ejecutado:'Lo ejecutado',periodo:'Periodo',resultado:'Resultado medido',verif:'Observaciones',decision:'Decisión',estandar:'Qué se estandariza o ajusta',lecciones:'Lecciones'};
+function gPdca(d){
+  let h='<div class="q4">';PH.forEach(([L,n,ks])=>{const any=ks.some(k=>filled(d[k])&&d[k]!=='—');
+    h+=`<div class="q${any?'':' inc'}"><span class="L">${L}</span><b class="t">${n}</b>${ks.filter(k=>filled(d[k])&&d[k]!=='—').map(k=>`<p><b>${PL[k]}:</b> ${esc(d[k])}</p>`).join('')||'<p style="color:#8a6a1a">Fase sin llenar</p>'}</div>`});
+  h+='</div><p class="cyc">Planear → Hacer → Verificar → Actuar → nuevo ciclo</p>';
+  const b=num(d.base),m=num(d.metaNum),r=num(d.resultado);const vs=[['Línea base',b],['Meta',m],['Resultado',r]].filter(x=>x[1]!==null);
+  if(vs.length>1){const mx=Math.max(...vs.map(x=>Math.abs(x[1])))||1;h+=`<h3>${esc(d.indicador||'Indicador')}</h3>`+vs.map(x=>`<div class="hb"><span>${x[0]}</span><span><i style="width:${Math.max(2,Math.abs(x[1])/mx*100)}%"></i></span><b>${fmt(x[1])}</b></div>`).join('')}
+  return h;
+}
+
+const SS=[['s1','Seiri · Clasificar'],['s2','Seiton · Ordenar'],['s3','Seiso · Limpiar'],['s4','Seiketsu · Estandarizar'],['s5','Shitsuke · Disciplina']];
+function gCincoS(d){
+  const v=SS.map(([k])=>num(d[k]));if(v.every(x=>x===null))return none('Califica cada S del 1 al 5 para ver el radar.');
+  const cx=280,cy=205,R=140,pt=(i,r)=>{const a=-Math.PI/2+i*2*Math.PI/5;return[cx+Math.cos(a)*r,cy+Math.sin(a)*r]};
+  let s=`<svg class="mid" viewBox="0 0 560 400" role="img" aria-label="Radar 5S">`;
+  for(let k=1;k<=5;k++)s+=`<polygon points="${[0,1,2,3,4].map(i=>pt(i,R*k/5).map(n=>n.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="${k===5?'#4d6b6a':'#d5dedc'}"/>`;
+  SS.forEach(([k,n],i)=>{const[x,y]=pt(i,R),[lx,ly]=pt(i,R+22);s+=`<line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="#d5dedc"/><text x="${lx.toFixed(1)}" y="${ly.toFixed(1)}" text-anchor="${Math.abs(lx-cx)<10?'middle':lx>cx?'start':'end'}" class="tb">${esc(n.split(' · ')[1])} ${v[i]??'–'}</text>`});
+  s+=`<polygon points="${v.map((x,i)=>pt(i,R*(x||0)/5).map(n=>n.toFixed(1)).join(',')).join(' ')}" fill="#7fb5aa" fill-opacity=".45" stroke="#0b6b5c" stroke-width="2"/>`;
+  v.forEach((x,i)=>{const[a,b]=pt(i,R*(x||0)/5);s+=`<circle cx="${a.toFixed(1)}" cy="${b.toFixed(1)}" r="4" fill="#0b6b5c"/>`});
+  let r='';SS.forEach(([k,n],i)=>r+=`<tr><td>${n}</td><td class="n">${v[i]??'—'}</td><td>${esc(d[k+'o'])}</td><td>${esc(d[k+'a'])}</td></tr>`);
+  return sc(s+'</svg>')+`<div class="tw"><table><tr><th>S</th><th class="n">Puntos</th><th>Observaciones</th><th>Acción</th></tr>${r}</table></div>`;
+}
+
+const EST=[['Pendiente','#fff'],['En proceso','#f6edb0'],['Concluida','#cfe8d0']];
+function gW2h(d){
+  const a=(d.acc||[]).filter(x=>filled(x.que));if(!a.length)return none('Agrega la primera acción para ver el plan.');
+  const cn=EST.map(([e])=>a.filter(x=>(x.estado||'Pendiente')===e).length);
+  let h=`<div class="stack">${EST.map(([e,c],i)=>cn[i]?`<i style="width:${cn[i]/a.length*100}%;background:${c}"></i>`:'').join('')}</div><div class="lg">${EST.map(([e,c],i)=>`<span><i style="background:${c}"></i>${e}: ${cn[i]}</span>`).join('')}</div>`;
+  const so=[...a].sort((x,y)=>String(x.cuando||'9').localeCompare(String(y.cuando||'9')));
+  h+=`<div class="tw"><table><tr><th>Qué</th><th>Por qué</th><th>Quién</th><th>Cuándo</th><th>Dónde</th><th>Cómo</th><th>Cuánto</th><th>Estado</th></tr>${so.map(x=>`<tr><td><b>${esc(x.que)}</b></td><td>${esc(x.porque)}</td><td>${esc(x.quien)}</td><td>${esc(dmy(x.cuando))}</td><td>${esc(x.donde)}</td><td>${esc(x.como)}</td><td>${esc(x.cuanto)}</td><td><span class="chip">${esc(x.estado||'Pendiente')}</span></td></tr>`).join('')}</table></div>`;
+  if(filled(d.eficacia))h+=`<p><b>Criterio de eficacia:</b> ${esc(d.eficacia)}</p>`;
+  return h;
+}
+
+const QD=[['Atención inmediata','#f3b6ad','Rojo'],['Dar seguimiento','#c9dcf2','Azul'],['Atención periódica','#f6edb0','Amarillo'],['Procesos controlados','#d5ead3','Verde']];
+const quad=(P,I)=>P>=6&&I>=6?0:I>=6?1:P>=6?2:3;
+function riskData(d){return(d.rs||[]).map((x,i)=>({...x,id:i+1,P:num(x.p),I:num(x.i)})).filter(x=>filled(x.r)).map(x=>({...x,n:x.P&&x.I?x.P*x.I:null,c4:x.P&&x.I?quad(x.P,x.I):null}))}
+function gRiesgos(d){
+  const rs=riskData(d);if(!rs.length)return none('Describe el primer riesgo y pondera probabilidad e impacto del 1 al 10.');
+  const X=110,Y=22,cw=46,chh=30;let s=`<svg class="wide" viewBox="0 0 920 392" role="img" aria-label="Matriz de riesgos SIIC, probabilidad e impacto de 1 a 10">`;
+  for(let I=10;I>=1;I--)for(let P=1;P<=10;P++){const x=X+(P-1)*cw,y=Y+(10-I)*chh,here=rs.filter(r=>r.P===P&&r.I===I);
+    s+=`<rect x="${x}" y="${y}" width="${cw}" height="${chh}" fill="${QD[quad(P,I)][1]}" stroke="#fff" stroke-width="1.5"/>`;
+    here.slice(0,2).forEach((r,k)=>{const px=x+(here.length>1?12+k*22:cw/2),py=y+chh/2;s+=`<circle cx="${px}" cy="${py}" r="10" fill="#fff" stroke="#1f3a3a" stroke-width="1.4"/><text x="${px}" y="${py+3.5}" text-anchor="middle" class="tb" style="font-size:9.5px">R${r.id}</text>`});
+    if(here.length>2)s+=`<text x="${x+cw-2}" y="${y+9}" text-anchor="end" class="tm" style="font-size:8.5px">+${here.length-2}</text>`}
+  s+=`<line x1="${X+5*cw}" y1="${Y}" x2="${X+5*cw}" y2="${Y+10*chh}" class="k2"/><line x1="${X}" y1="${Y+5*chh}" x2="${X+10*cw}" y2="${Y+5*chh}" class="k2"/>`;
+  for(let k=1;k<=10;k++)s+=`<text x="${X+(k-1)*cw+cw/2}" y="${Y+10*chh+16}" text-anchor="middle" class="tb">${k}</text><text x="${X-10}" y="${Y+(10-k)*chh+chh/2+4}" text-anchor="end" class="tb">${k}</text>`;
+  s+=`<text x="${X+5*cw}" y="${Y+10*chh+38}" text-anchor="middle" class="tb">Probabilidad</text><text transform="translate(${X-48} ${Y+5*chh}) rotate(-90)" text-anchor="middle" class="tb">Impacto</text>`;
+  const rg=['P 6–10 · I 6–10','P 1–5 · I 6–10','P 6–10 · I 1–5','P 1–5 · I 1–5'];
+  QD.forEach((q,i)=>s+=`<rect x="600" y="${40+i*52}" width="20" height="20" fill="${q[1]}" stroke="#4d6b6a"/><text x="628" y="${50+i*52}" class="tb">${q[2]} · ${q[0]}</text><text x="628" y="${65+i*52}" class="tm">${rg[i]} — ${rs.filter(r=>r.c4===i).length} riesgos</text>`);
+  const so=[...rs].sort((a,b)=>(a.c4??9)-(b.c4??9)||(b.n||0)-(a.n||0));
+  return sc(s+'</svg>')+`<div class="tw"><table><tr><th>Núm.</th><th>Riesgo</th><th class="n">P</th><th class="n">I</th><th class="n">Valor</th><th>Cuadrante</th><th>Resolución</th><th>Control o tratamiento</th><th>Responsable</th></tr>${so.map(r=>`<tr><td>R${r.id}</td><td>${esc(r.r)}</td><td class="n">${r.P??'—'}</td><td class="n">${r.I??'—'}</td><td class="n"><b>${r.n??'—'}</b></td><td>${r.c4===null?'Sin ponderar':`<span class="chip" style="background:${QD[r.c4][1]}">${QD[r.c4][2]}</span> ${QD[r.c4][0]}`}</td><td>${esc(r.nr||'Local')}</td><td>${esc(r.c)}</td><td>${esc(r.q)}</td></tr>`).join('')}</table></div>
+  <p style="font-size:11.5px;color:#5b6d6b"><b>Probabilidad:</b> Remota 1–2 (una vez en 6 meses) · Inusual 3–4 (una vez en 3 meses) · Posible 5–6 (una vez al mes) · Probable 7–8 (una vez a la semana) · Recurrente 9–10 (una vez al día o más).<br><b>Impacto:</b> Insignificante 1–2 · Moderado 3–4 · Serio 5–6 · Grave 7–8 · Catastrófico 9–10. El cuadrante se asigna por P e I, no por el valor.</p>`;
+}
+
+const A3B=[['contexto','1. Contexto','Por qué importa'],['situacion','2. Situación actual','Datos de línea base'],['meta','3. Meta','Indicador, valor y plazo'],['causas','4. Análisis de causas','Causas validadas'],['contramedidas','5. Contramedidas','Qué se cambia'],['plan','6. Plan','Responsables y fechas'],['resultados','7. Resultados','Antes y después'],['estandar','8. Estandarización y lecciones','Cómo se sostiene']];
+function gA3(d){return`<div class="a3">${A3B.map(([k,n])=>`<div class="q${filled(d[k])?'':' inc'}"><b class="t">${n}</b><p>${filled(d[k])?esc(d[k]).replace(/\n/g,'<br>'):'<span style="color:#8a6a1a">Bloque sin llenar</span>'}</p></div>`).join('')}</div><p class="cyc">Columna izquierda: entender · Columna derecha: actuar y aprender</p>`}
+
+const SEM=[['Verde','#cfe8d0'],['Amarillo','#f6edb0'],['Rojo','#f3b6ad']];
+function indData(d){return(d.ind||[]).filter(x=>filled(x.n)).map(x=>{const vals=String(x.v||'').split(/[;,\s]+/).map(num).filter(v=>v!==null),meta=num(x.meta),lim=num(x.lim),up=x.s!=='Menor es mejor',last=vals.length?vals[vals.length-1]:null;
+  let st=null;if(last!==null&&meta!==null){const l=lim===null?meta:lim;st=up?(last>=meta?0:last>=l?1:2):(last<=meta?0:last<=l?1:2)}
+  let tr=null;if(vals.length>=4){const h=Math.floor(vals.length/2),a=vals.slice(0,h).reduce((p,c)=>p+c,0)/h,b=vals.slice(-h).reduce((p,c)=>p+c,0)/h,df=(b-a)/(Math.abs(a)||1);tr=Math.abs(df)<.02?0:(df>0)===up?1:-1}
+  return{...x,vals,meta,lim,up,last,st,tr}})}
+function spark(x){if(x.vals.length<2)return'';const all=[...x.vals,...(x.meta!==null?[x.meta]:[])],mn=Math.min(...all),mx=Math.max(...all),W=150,H=40,p=5,Y=v=>H-p-((v-mn)/((mx-mn)||1))*(H-2*p),X=i=>p+i*(W-2*p)/(x.vals.length-1);
+  return`<svg viewBox="0 0 ${W} ${H}" style="width:150px;min-width:150px" role="img" aria-label="Tendencia">${x.meta!==null?`<line x1="0" y1="${Y(x.meta).toFixed(1)}" x2="${W}" y2="${Y(x.meta).toFixed(1)}" stroke="#a04a3a" stroke-dasharray="4 3"/>`:''}<polyline points="${x.vals.map((v,i)=>X(i).toFixed(1)+','+Y(v).toFixed(1)).join(' ')}" fill="none" stroke="#1f3a3a" stroke-width="1.6"/><circle cx="${X(x.vals.length-1).toFixed(1)}" cy="${Y(x.last).toFixed(1)}" r="3.5" fill="#0b6b5c"/></svg>`}
+function gTablero(d){
+  const xs=indData(d);if(!xs.length)return none('Agrega el primer indicador con su meta y valores.');
+  const cn=[0,1,2].map(i=>xs.filter(x=>x.st===i).length);
+  return`<div class="lg">${SEM.map((s,i)=>`<span><i style="background:${s[1]}"></i>${s[0]}: ${cn[i]}</span>`).join('')}</div><div class="tw"><table><tr><th>Indicador</th><th class="n">Meta</th><th class="n">Límite</th><th class="n">Último</th><th>Semáforo</th><th>Tendencia (línea punteada: meta)</th><th>Responsable</th></tr>${xs.map(x=>`<tr><td><b>${esc(x.n)}</b><br><span style="color:#5b6d6b;font-size:11.5px">${x.up?'Mayor es mejor':'Menor es mejor'}</span></td><td class="n">${x.meta??'—'}</td><td class="n">${x.lim??'—'}</td><td class="n"><b>${x.last??'—'}</b></td><td>${x.st===null?'Sin datos':`<span class="chip" style="background:${SEM[x.st][1]}">${SEM[x.st][0]}</span>`}</td><td>${spark(x)}<span style="font-size:11.5px;color:#5b6d6b">${x.tr===null?'':x.tr>0?'Mejora':x.tr<0?'Empeora':'Estable'}</span></td><td>${esc(x.q)}</td></tr>`).join('')}</table></div>`;
+}
+
+const AR=[['Conforme','#cfe8d0'],['Observación','#f6edb0'],['No conformidad','#f3b6ad'],['No evaluado','#fff']];
+function gAuditoria(d){
+  const it=(d.chk||[]).filter(x=>filled(x.req)||filled(x.preg));
+  const pl=[['Objetivo','objetivo'],['Alcance','alcance'],['Criterios','criterios'],['Equipo auditor','equipo'],['Fecha y agenda','agenda'],['Auditados','auditados']].filter(([,k])=>filled(d[k]));
+  let h=pl.length?`<div class="tw"><table><tr><th style="width:26%">Elemento del plan</th><th>Definición</th></tr>${pl.map(([n,k])=>`<tr><td><b>${n}</b></td><td>${esc(d[k])}</td></tr>`).join('')}</table></div>`:'';
+  if(!it.length)return h+none('Agrega los requisitos de la lista de verificación.');
+  const cn=AR.map(([e])=>it.filter(x=>(x.res||'No evaluado')===e).length);
+  h+=`<div class="stack">${AR.map(([e,c],i)=>cn[i]?`<i style="width:${cn[i]/it.length*100}%;background:${c}"></i>`:'').join('')}</div><div class="lg">${AR.map(([e,c],i)=>`<span><i style="background:${c}"></i>${e}: ${cn[i]}</span>`).join('')}</div>`;
+  h+=`<div class="tw"><table><tr><th>Núm.</th><th>Requisito</th><th>Pregunta</th><th>Evidencia esperada</th><th>Resultado</th><th>Hallazgo</th></tr>${it.map((x,i)=>`<tr><td>${i+1}</td><td>${esc(x.req)}</td><td>${esc(x.preg)}</td><td>${esc(x.ev)}</td><td><span class="chip" style="background:${(AR.find(a=>a[0]===(x.res||'No evaluado'))||AR[3])[1]}">${esc(x.res||'No evaluado')}</span></td><td>${esc(x.h)}</td></tr>`).join('')}</table></div>`;
+  return h;
+}
+
+/* ---------- análisis ---------- */
+const R=()=>({res:[],hal:[],al:[],rec:[]});
+function aIshikawa(d){const o=R(),cs=CATS.map(([id,n])=>({n,l:(d['c_'+id]||[]).filter(c=>filled(c.t))})),all=cs.flatMap(c=>c.l),tot=all.length,val=all.filter(c=>c.v==='Validada').length,des=all.filter(c=>c.v==='Descartada').length;
+  o.res.push(`Se identificaron ${tot} causas posibles en ${cs.filter(c=>c.l.length).length} de 6 categorías.`);
+  if(tot){const mx=[...cs].sort((a,b)=>b.l.length-a.l.length)[0];o.hal.push(`La categoría con más causas es ${mx.n} (${mx.l.length}, ${pct(mx.l.length,tot)}% del total).`);
+    o.hal.push(`Estado de validación: ${val} validadas, ${des} descartadas y ${tot-val-des} pendientes.`);
+    all.filter(c=>c.v==='Validada').forEach(c=>o.hal.push(`Causa validada: ${c.t}.`))}
+  const em=cs.filter(c=>!c.l.length).map(c=>c.n);if(em.length)o.al.push(`Categorías sin causas: ${em.join(', ')}. Confirma con el equipo que de verdad no aplican.`);
+  if(!/\d/.test(d.problema||''))o.al.push('El problema no incluye un dato. Redáctalo con magnitud y periodo para poder medir la mejora.');
+  if(tot&&!val)o.al.push('Ninguna causa está validada. El diagrama aún es una lista de hipótesis.');
+  if(tot&&tot<8)o.al.push('Hay pocas causas para un problema recurrente. Considera una lluvia de ideas con personal de todos los turnos.');
+  o.rec.push('Selecciona de 3 a 5 causas probables y valida cada una con datos, observación directa o revisión de registros.');
+  o.rec.push('A cada causa validada aplícale los 5 porqués hasta llegar a algo que el hospital puede cambiar.');return o}
+function aPorques(d){const o=R(),pq=(d.pq||[]).filter(x=>filled(x.p)),se=pq.filter(x=>!filled(x.e)).length;
+  o.res.push(`La cadena tiene ${pq.length} niveles de porqué${filled(d.raiz)?' y una causa raíz declarada':''}.`);
+  if(filled(d.raiz))o.hal.push(`Causa raíz: ${d.raiz}.`);if(filled(d.contra))o.hal.push(`Contramedida propuesta: ${d.contra}.`);
+  if(pq.length&&pq.length<3)o.al.push('Con menos de 3 porqués es probable que te hayas quedado en un síntoma.');
+  if(se)o.al.push(`${se} de ${pq.length} respuestas no tienen evidencia. Cada porqué debe poder comprobarse.`);
+  if(/(error humano|descuido|olvid|distra|negligen|falta de (atenci|compromiso|inter))/i.test((d.raiz||'')+' '+(pq.length?pq[pq.length-1].p:'')))o.al.push('La causa raíz apunta a una persona. Pregunta una vez más qué del sistema permitió que ocurriera (método, carga de trabajo, diseño, supervisión).');
+  if(!filled(d.raiz))o.al.push('Falta declarar la causa raíz.');if(!filled(d.contra))o.al.push('Falta la contramedida que elimina la causa raíz.');
+  o.rec.push('Lee la cadena al revés con "por lo tanto": si algún eslabón no se sostiene, corrígelo.');o.rec.push('Convierte la contramedida en un plan 5W2H con responsable, fecha y verificación de eficacia.');return o}
+function aPareto(d){const o=R(),{it,tot}=parData(d);if(!it.length){o.al.push('No hay datos capturados.');return o}
+  const v=it.filter(x=>x.vital);o.res.push(`${it.length} categorías suman ${fmt(tot)} ${d.titulo?'registros de '+d.titulo.toLowerCase():'registros'}${filled(d.periodo)?' en '+d.periodo:''}.`);
+  o.hal.push(`${v.length} de ${it.length} categorías (${pct(v.length,it.length)}%) acumulan el ${Math.round(v[v.length-1].cum)}% del total: ${v.map(x=>`${x.c} (${x.p.toFixed(0)}%)`).join(', ')}.`);
+  o.hal.push(`La principal, ${it[0].c}, representa por sí sola el ${it[0].p.toFixed(0)}%.`);
+  if(it.length<4)o.al.push('Con menos de 4 categorías el Pareto aporta poco. Desglosa más los datos.');
+  if(v.length/it.length>.6&&it.length>=4)o.al.push('No hay un efecto Pareto claro: las frecuencias son parejas. Prueba estratificar por turno, servicio, día o tipo de paciente.');
+  const ot=v.find(x=>/^otr[oa]s?$/i.test(x.c));if(ot)o.al.push('"Otros" está entre los vitales. Desglósalo, porque esconde causas importantes.');
+  if(tot<30)o.al.push(`El total es bajo (${fmt(tot)}). Amplía el periodo antes de tomar decisiones.`);
+  o.rec.push(`Concentra el análisis de causa raíz en: ${v.slice(0,3).map(x=>x.c).join(', ')}.`);o.rec.push('Repite el Pareto con el mismo criterio después de las acciones para comprobar el cambio.');return o}
+function aPdca(d){const o=R(),done=PH.filter(([, ,ks])=>ks.some(k=>filled(d[k])&&d[k]!=='—')).length,b=num(d.base),m=num(d.metaNum),r=num(d.resultado);
+  o.res.push(`Ciclo con ${done} de 4 fases documentadas.`);
+  if(b!==null&&m!==null&&r!==null&&m!==b){const up=m>b,ok=up?r>=m:r<=m,av=Math.round((r-b)/(m-b)*100);o.hal.push(`${d.indicador||'El indicador'} pasó de ${fmt(b)} a ${fmt(r)} frente a una meta de ${fmt(m)}: ${ok?'meta alcanzada':'meta no alcanzada'} (${av}% del avance esperado).`);
+    if(ok&&d.decision!=='Estandarizar')o.al.push('La meta se alcanzó pero la decisión no es estandarizar. Documenta el nuevo método para no perder la mejora.');
+    if(!ok&&d.decision==='Estandarizar')o.al.push('La decisión es estandarizar aunque la meta no se alcanzó. Revisa si conviene ajustar y repetir el ciclo.');
+  }else if(done>=3)o.al.push('Faltan línea base, meta o resultado numéricos; sin ellos la fase Verificar no es concluyente.');
+  PH.forEach(([L,n,ks])=>{if(!ks.some(k=>filled(d[k])&&d[k]!=='—'))o.al.push(`Fase ${n} sin llenar.`)});
+  if(filled(d.decision)&&d.decision!=='—')o.hal.push(`Decisión en Actuar: ${d.decision}.`);
+  o.rec.push('Prueba el cambio a pequeña escala (un servicio o un turno) antes de extenderlo.');o.rec.push('Si estandarizas, actualiza el procedimiento y capacita; si ajustas, inicia un nuevo ciclo con lo aprendido.');return o}
+function aCincoS(d){const o=R(),v=SS.map(([k,n])=>({k,n,s:num(d[k])})).filter(x=>x.s!==null);if(!v.length){o.al.push('No hay calificaciones.');return o}
+  const av=v.reduce((a,x)=>a+x.s,0)/v.length,niv=av<2.5?'crítico':av<3.5?'en desarrollo':av<4.5?'bueno':'sobresaliente';
+  o.res.push(`Promedio 5S: ${av.toFixed(1)} de 5 (${Math.round(av*20)}%), nivel ${niv}.`);
+  const mn=Math.min(...v.map(x=>x.s));o.hal.push(`Punto más débil: ${v.filter(x=>x.s===mn).map(x=>x.n).join(', ')} con ${mn} puntos.`);
+  const mx=Math.max(...v.map(x=>x.s));if(mx>mn)o.hal.push(`Punto más fuerte: ${v.filter(x=>x.s===mx).map(x=>x.n).join(', ')} con ${mx} puntos.`);
+  v.filter(x=>x.s<=3&&!filled(d[x.k+'a'])).forEach(x=>o.al.push(`${x.n} tiene ${x.s} puntos y no tiene acción definida.`));
+  if(v.length<5)o.al.push('Faltan S por calificar.');
+  const s=k=>(v.find(x=>x.k===k)||{}).s;if(s('s4')>s('s1')+1||s('s5')>s('s2')+1)o.al.push('Estandarizar o Disciplina califican más alto que las primeras S. Las 5S se sostienen en orden: revisa la evaluación.');
+  o.rec.push('Atiende las S en secuencia: primero clasificar y ordenar, después limpiar, y al final estandarizar y sostener.');o.rec.push('Toma fotos de antes y después y repite la evaluación cada mes con la misma lista.');return o}
+function aW2h(d){const o=R(),a=(d.acc||[]).filter(x=>filled(x.que)),t=today();if(!a.length){o.al.push('No hay acciones capturadas.');return o}
+  const c=a.filter(x=>x.estado==='Concluida').length;o.res.push(`Plan con ${a.length} acciones; ${c} concluidas (${pct(c,a.length)}% de avance).`);
+  const ds=a.map(x=>x.cuando).filter(filled).sort();if(ds.length)o.hal.push(`El plan corre del ${dmy(ds[0])} al ${dmy(ds[ds.length-1])}.`);
+  const qs={};a.forEach(x=>{if(filled(x.quien))qs[x.quien.trim()]=(qs[x.quien.trim()]||0)+1});const tq=Object.entries(qs).sort((x,y)=>y[1]-x[1]);
+  if(tq.length)o.hal.push(`Responsables: ${tq.map(([n,k])=>`${n} (${k})`).join(', ')}.`);
+  const ve=a.filter(x=>x.estado!=='Concluida'&&filled(x.cuando)&&x.cuando<t);if(ve.length)o.al.push(`${ve.length} acciones vencidas: ${ve.map(x=>x.que).join('; ')}.`);
+  const sq=a.filter(x=>!filled(x.quien)).length,sf=a.filter(x=>!filled(x.cuando)).length;if(sq)o.al.push(`${sq} acciones sin responsable.`);if(sf)o.al.push(`${sf} acciones sin fecha.`);
+  if(tq.length&&a.length>=4&&tq[0][1]/a.length>.6)o.al.push(`${tq[0][0]} concentra más del 60% de las acciones. Valora repartir la carga.`);
+  if(!a.some(x=>/eficacia|verific|evalu|medir|auditar/i.test(x.que+' '+x.como)))o.al.push('El plan no incluye una acción de verificación de eficacia con fecha propia. Sin ella, el plan termina al implementar y no al resolver.');
+  if(!filled(d.eficacia))o.al.push('Falta el criterio de eficacia: qué resultado medible demuestra que el problema se resolvió.');
+  o.rec.push('Adjunta la evidencia de cierre de cada acción (foto, registro, lista de asistencia).');o.rec.push('Revisa el avance en una fecha fija y lleva los vencimientos al comité que corresponda.');return o}
+function aRiesgos(d){const o=R(),rs=riskData(d),pn=rs.filter(r=>r.n);if(!rs.length){o.al.push('No hay riesgos capturados.');return o}
+  const cn=QD.map((q,i)=>pn.filter(r=>r.c4===i).length),by=i=>pn.filter(r=>r.c4===i).sort((a,b)=>b.n-a.n);
+  o.res.push(`${rs.length} riesgos evaluados: ${QD.map((q,i)=>`${cn[i]} en ${q[2].toLowerCase()} (${q[0].toLowerCase()})`).join(', ')}.`);
+  by(0).forEach((r,k)=>o.hal.push(`Rojo, prioridad ${k+1}: R${r.id} con valor ${r.n} (P ${r.P} × I ${r.I}). ${r.r}.`));
+  by(1).forEach(r=>o.hal.push(`Azul: R${r.id} con valor ${r.n} (P ${r.P} × I ${r.I}), poco frecuente pero de impacto alto. ${r.r}.`));
+  if(!cn[0]&&pn.length)o.hal.push('Ningún riesgo cae en el cuadrante rojo.');
+  by(0).filter(r=>!filled(r.c)).forEach(r=>o.al.push(`R${r.id} está en rojo y no tiene control o tratamiento definido.`));
+  const sq=by(0).filter(r=>!filled(r.q)).length;if(sq)o.al.push(`${sq} riesgos en rojo sin responsable.`);
+  by(1).filter(r=>!filled(r.c)).forEach(r=>o.al.push(`R${r.id} está en azul (impacto ${r.I}) y no tiene control definido.`));
+  pn.filter(r=>r.nr&&r.nr!=='Local').forEach(r=>o.al.push(`R${r.id} es de resolución ${r.nr.toLowerCase()}: requiere oficio a la Coordinación Estatal con el riesgo y las acciones solicitadas.`));
+  if(rs.length-pn.length)o.al.push(`${rs.length-pn.length} riesgos sin ponderar.`);
+  if(pn.length>=5&&cn[3]===pn.length)o.al.push('Todos los riesgos quedaron en verde. Revisa si la ponderación es realista.');
+  if(cn[0])o.rec.push('Cada riesgo rojo de resolución local requiere un Proyecto de Mejora Continua (PHVA) de 3 a 5 actividades y plazo máximo de 4 meses; si hay varios, empieza por el de mayor valor.');
+  if(cn[1])o.rec.push('Riesgos azules: dar seguimiento y mantener las barreras de seguridad vigentes.');
+  if(cn[2])o.rec.push('Riesgos amarillos: atención periódica con ajustes operativos para que no escalen.');
+  o.rec.push('La probabilidad y el impacto son propuestas: valídalas con el Jefe de Servicio y su equipo antes de registrar en el SIIC.');return o}
+function aA3(d){const o=R(),ok=A3B.filter(([k])=>filled(d[k]));o.res.push(`A3 con ${ok.length} de 8 bloques llenos.`);
+  A3B.filter(([k])=>!filled(d[k])).forEach(([k,n])=>o.al.push(`Bloque sin llenar: ${n}.`));
+  if(filled(d.meta)&&!/\d/.test(d.meta))o.al.push('La meta no tiene un valor numérico ni plazo.');
+  if(filled(d.situacion)&&!/\d/.test(d.situacion))o.al.push('La situación actual no incluye datos de línea base.');
+  if(filled(d.causas)&&!/valid|comprob|confirm|dato|observ/i.test(d.causas))o.al.push('El análisis de causas no indica cómo se validaron.');
+  if(filled(d.plan)&&!/\d/.test(d.plan))o.al.push('El plan no muestra fechas.');
+  const lg=A3B.filter(([k])=>String(d[k]||'').length>450).map(x=>x[1]);if(lg.length)o.al.push(`Bloques demasiado largos para leerse en 30 segundos: ${lg.join(', ')}.`);
+  if(filled(d.meta))o.hal.push(`Meta: ${d.meta}`);if(filled(d.resultados))o.hal.push(`Resultados: ${d.resultados}`);
+  o.rec.push('Presenta el A3 en 5 minutos: 1 para el problema, 2 para la causa y cómo se comprobó, 2 para acciones y resultado.');o.rec.push('Sustituye texto por gráficos siempre que se pueda (Pareto en situación, Ishikawa en causas).');return o}
+function aTablero(d){const o=R(),xs=indData(d);if(!xs.length){o.al.push('No hay indicadores capturados.');return o}
+  const cn=[0,1,2].map(i=>xs.filter(x=>x.st===i).length);o.res.push(`${xs.length} indicadores: ${cn[0]} en verde, ${cn[1]} en amarillo y ${cn[2]} en rojo.`);
+  xs.filter(x=>x.st===2).forEach(x=>o.hal.push(`En rojo: ${x.n}, último valor ${x.last} frente a meta ${x.meta}${x.tr<0?', y la tendencia empeora':x.tr>0?', aunque la tendencia mejora':''}.`));
+  xs.filter(x=>x.st===1).forEach(x=>o.hal.push(`En amarillo: ${x.n}, último valor ${x.last} frente a meta ${x.meta}.`));
+  xs.filter(x=>x.st===0&&x.tr<0).forEach(x=>o.al.push(`${x.n} está en verde pero su tendencia empeora. Actúa de forma preventiva.`));
+  xs.filter(x=>x.st===null).forEach(x=>o.al.push(`${x.n} no tiene meta o valores.`));
+  xs.filter(x=>x.vals.length&&x.vals.length<6).forEach(x=>o.al.push(`${x.n} tiene ${x.vals.length} periodos; se recomiendan al menos 6 para leer la tendencia.`));
+  const sq=xs.filter(x=>!filled(x.q)).length;if(sq)o.al.push(`${sq} indicadores sin responsable visible.`);
+  if(cn[2])o.rec.push('Cada indicador en rojo requiere análisis de causa y plan de acción con responsable y fecha.');if(cn[1])o.rec.push('Los amarillos requieren análisis de tendencia y acción preventiva.');
+  o.rec.push('Mantén los verdes y documenta qué práctica los sostiene para estandarizarla.');return o}
+function aAuditoria(d){const o=R(),it=(d.chk||[]).filter(x=>filled(x.req)||filled(x.preg));if(!it.length){o.al.push('La lista de verificación está vacía.');return o}
+  const ev=it.filter(x=>x.res&&x.res!=='No evaluado'),cf=ev.filter(x=>x.res==='Conforme').length,nc=it.filter(x=>x.res==='No conformidad'),ob=it.filter(x=>x.res==='Observación');
+  o.res.push(`${it.length} requisitos en la lista; ${ev.length} evaluados${ev.length?`, con ${pct(cf,ev.length)}% de conformidad`:''}.`);
+  nc.forEach(x=>o.hal.push(`No conformidad en "${x.req||x.preg}"${filled(x.h)?': '+x.h:''}.`));ob.forEach(x=>o.hal.push(`Observación en "${x.req||x.preg}"${filled(x.h)?': '+x.h:''}.`));
+  if(ev.length&&!nc.length&&!ob.length)o.hal.push('No se registraron no conformidades ni observaciones.');
+  [...nc,...ob].filter(x=>!filled(x.h)).forEach(x=>o.al.push(`Falta describir el hallazgo de "${x.req||x.preg}" con evidencia objetiva.`));
+  if(it.length-ev.length)o.al.push(`${it.length-ev.length} requisitos sin evaluar.`);
+  ['objetivo','alcance','criterios'].filter(k=>!filled(d[k])).forEach(k=>o.al.push(`El plan de auditoría no define ${k==='criterios'?'los criterios':'el '+k}.`));
+  const se=it.filter(x=>!filled(x.ev)).length;if(se)o.al.push(`${se} requisitos sin evidencia esperada definida.`);
+  if(nc.length)o.rec.push('Registra cada no conformidad con requisito incumplido, evidencia y análisis de causa raíz; el plan de acción va en 5W2H.');
+  o.rec.push('Redacta los hallazgos como hecho + evidencia + requisito, sin juicios sobre personas.');o.rec.push('Programa el seguimiento para verificar la eficacia de las acciones.');return o}
+
+/* ---------- catálogo ---------- */
+const f=(k,l,t,x)=>({k,l,t:t||'text',...x});
+const TOOLS={
+ ishikawa:{name:'Diagrama de Ishikawa',tag:'Causas',when:'Problema recurrente con muchas causas posibles, analizado en equipo.',next:'porques',g:gIshikawa,a:aIshikawa,
+  fields:[f('problema','Problema o efecto (con dato y periodo)','area')],
+  lists:CATS.map(([id,n])=>({k:'c_'+id,l:n,one:'Causa',cols:[f('t','Causa','text',{full:1}),f('v','Estado','sel',{o:['Pendiente','Validada','Descartada']})]})),
+  ex:{problema:'32% de los resultados de laboratorio se entregan después del tiempo comprometido (octubre)',c_metodo:[{t:'Sin horario definido de corte y entrega',v:'Validada'},{t:'Validación de resultados al final del turno',v:'Pendiente'}],c_personal:[{t:'Un solo químico valida en turno vespertino',v:'Validada'},{t:'Personal nuevo sin inducción al sistema',v:'Pendiente'}],c_insumos:[{t:'Desabasto intermitente de reactivos',v:'Pendiente'}],c_equipo:[{t:'Impresora única en ventanilla',v:'Validada'},{t:'Analizador con paros no programados',v:'Descartada'}],c_medicion:[{t:'No se mide el tiempo por etapa',v:'Pendiente'}],c_entorno:[{t:'Ventanilla compartida con toma de muestras',v:'Pendiente'}]}},
+ porques:{name:'5 Porqués',tag:'Causas',when:'Evento puntual con una secuencia clara, para llegar a la causa raíz.',next:'w2h',g:gPorques,a:aPorques,
+  fields:[f('problema','Problema (qué pasó, dónde, cuándo)','area')],
+  lists:[{k:'pq',l:'Cadena de porqués',one:'Porqué',cols:[f('p','Porque…','text',{full:1}),f('e','Evidencia que lo respalda','text',{full:1})]}],
+  fields2:[f('raiz','Causa raíz','area'),f('contra','Contramedida','area')],
+  ex:{problema:'Cirugía programada suspendida el 4 de noviembre por falta de instrumental estéril',pq:[{p:'El set de laparoscopía no estaba esterilizado a la hora de la cirugía',e:'Bitácora de CEyE'},{p:'El set se usó la tarde anterior y entró tarde al ciclo',e:'Registro de recepción 19:40 h'},{p:'Solo hay un set y no se revisa la programación del día siguiente',e:'Inventario de CEyE'},{p:'CEyE no recibe la programación quirúrgica',e:'Entrevista con jefa de CEyE'},{p:'El procedimiento de programación no incluye a CEyE como destinatario',e:'Procedimiento vigente'}],raiz:'El procedimiento de programación quirúrgica no contempla avisar a CEyE del instrumental requerido',contra:'Incluir a CEyE en la distribución diaria de la programación y verificar instrumental crítico a las 14:00 h del día previo'}},
+ pareto:{name:'Diagrama de Pareto',tag:'Priorizar',when:'Tienes conteos por tipo o causa y necesitas decidir por dónde empezar.',next:'ishikawa',g:gPareto,a:aPareto,
+  fields:[f('titulo','Qué se está contando'),f('periodo','Periodo')],
+  lists:[{k:'items',l:'Categorías',one:'Categoría',cols:[f('c','Categoría'),f('f','Frecuencia','num')]}],
+  ex:{titulo:'Cirugías canceladas por causa',periodo:'tercer trimestre',items:[{c:'Falta de tiempo quirúrgico',f:34},{c:'Paciente no se presentó',f:21},{c:'Falta de hemoderivados',f:14},{c:'Estudios incompletos',f:11},{c:'Falta de insumos',f:8},{c:'Equipo descompuesto',f:5},{c:'Otras',f:4}]}},
+ pdca:{name:'Ciclo PDCA (PHVA)',tag:'Mejora',when:'Quieres documentar una mejora completa: planear, probar, medir y decidir.',next:'tablero',g:gPdca,a:aPdca,
+  fields:[{h:'P · Planear'},f('problema','Problema','area'),f('objetivo','Objetivo','area'),f('indicador','Indicador'),f('base','Línea base (número)','num'),f('metaNum','Meta (número)','num'),f('acciones','Acciones planeadas','area'),{h:'H · Hacer'},f('ejecutado','Lo que se ejecutó','area'),f('periodo','Periodo de la prueba'),{h:'V · Verificar'},f('resultado','Resultado medido (número)','num'),f('verif','Observaciones de la verificación','area'),{h:'A · Actuar'},f('decision','Decisión','sel',{o:['—','Estandarizar','Ajustar y repetir el ciclo','Abandonar el cambio']}),f('estandar','Qué se estandariza o ajusta','area'),f('lecciones','Lecciones aprendidas','area')],lists:[],
+  ex:{problema:'Apego a higiene de manos de 58% en Medicina Interna',objetivo:'Elevar el apego a 80% en 8 semanas',indicador:'Apego a higiene de manos (%)',base:58,metaNum:80,acciones:'Colocar solución alcoholada en cada cama; retroalimentación semanal por turno; observador capacitado',ejecutado:'Se instalaron 24 dispensadores y se hicieron 6 sesiones de retroalimentación',periodo:'8 semanas, turno matutino y vespertino',resultado:76,verif:'El turno nocturno quedó fuera de la prueba; los momentos 1 y 2 siguen siendo los más bajos',decision:'Ajustar y repetir el ciclo',estandar:'Mantener dispensadores por cama; extender retroalimentación al turno nocturno',lecciones:'La retroalimentación inmediata funcionó mejor que los carteles'}},
+ cincoS:{name:'Metodología 5S',tag:'Orden',when:'Necesitas ordenar y sostener un área física: almacén, farmacia, CEyE, oficina.',next:'w2h',g:gCincoS,a:aCincoS,
+  fields:SS.flatMap(([k,n])=>[{h:n},f(k,'Calificación (1 muy mal · 5 excelente)','sel',{o:S15}),f(k+'o','Observaciones','text'),f(k+'a','Acción','text')]),lists:[],
+  ex:{s1:'3',s1o:'Hay cajas vacías y medicamento caducado sin separar',s1a:'Retirar lo innecesario con tarjeta roja',s2:'2',s2o:'Claves sin ubicación fija ni rotulado',s2a:'',s3:'4',s3o:'Limpieza diaria registrada',s3a:'',s4:'2',s4o:'No hay estándar visual de acomodo',s4a:'Elaborar mapa de anaqueles',s5:'2',s5o:'No se hacen recorridos de verificación',s5a:''}},
+ w2h:{name:'Plan de acción 5W2H',tag:'Actuar',when:'Ya conoces la causa y necesitas acciones con responsable, fecha y costo.',next:'tablero',g:gW2h,a:aW2h,
+  fields:[f('objetivo','Problema o no conformidad que atiende','area'),f('eficacia','Criterio de eficacia (resultado medible)','area')],
+  lists:[{k:'acc',l:'Acciones',one:'Acción',cols:[f('que','Qué','text',{full:1}),f('porque','Por qué'),f('quien','Quién'),f('cuando','Cuándo','date'),f('donde','Dónde'),f('como','Cómo'),f('cuanto','Cuánto (costo u horas)'),f('estado','Estado','sel',{o:['Pendiente','En proceso','Concluida']})]}],
+  ex:{objetivo:'Desvíos de temperatura no detectados en el refrigerador de red fría de Farmacia',eficacia:'Cero desvíos no detectados durante 8 semanas',acc:[{que:'Instalar termómetro con registro y alarma',porque:'Desvíos no detectados en fin de semana',quien:'Ing. Biomédica',cuando:'2026-11-20',donde:'Farmacia',como:'Solicitar, instalar y probar alarma',cuanto:'Sin costo (equipo en almacén)',estado:'En proceso'},{que:'Actualizar la bitácora de temperatura a dos lecturas por turno',porque:'Una lectura diaria es insuficiente',quien:'Jefa de Farmacia',cuando:'2026-11-17',donde:'Farmacia',como:'Nuevo formato y difusión',cuanto:'2 h',estado:'Concluida'},{que:'Capacitar al personal en respuesta a desvíos',porque:'No se conoce el plan de contingencia',quien:'Jefa de Farmacia',cuando:'2026-11-27',donde:'Aula',como:'Sesión de 1 h con evaluación',cuanto:'6 h',estado:'Pendiente'},{que:'Verificar eficacia',porque:'Confirmar que no hay desvíos sin detectar',quien:'Calidad',cuando:'2027-01-22',donde:'Farmacia',como:'Revisar registros de 8 semanas',cuanto:'2 h',estado:'Pendiente'}]}},
+ riesgos:{name:'Matriz de riesgos SIIC (1 a 10)',tag:'Prevenir',when:'Quieres ponderar riesgos o problemas con la escala del SIIC y saber cuáles requieren proyecto de mejora.',next:'pdca',g:gRiesgos,a:aRiesgos,
+  fields:[f('proceso','Proceso o servicio evaluado')],
+  lists:[{k:'rs',l:'Riesgos',one:'Riesgo',cols:[f('r','Riesgo (qué pasa y dónde, causa, consecuencias, a quién afecta)','text',{full:1}),f('p','Probabilidad (1 a 10)','sel',{o:S110}),f('i','Impacto (1 a 10)','sel',{o:S110}),f('nr','Nivel de resolución','sel',{o:['Local','Estatal','Central']}),f('c','Control o tratamiento'),f('q','Responsable')]}],
+  ex:{proceso:'Quirófano',rs:[{r:'Suspensión de cirugías por falla del esterilizador sin equipo de respaldo',p:'7',i:'8',nr:'Local',c:'Mantenimiento preventivo y convenio de respaldo',q:'Conservación'},{r:'Infección de sitio quirúrgico por profilaxis antibiótica fuera de tiempo',p:'6',i:'9',nr:'Local',c:'',q:'Anestesiología'},{r:'Retraso de la primera cirugía por expediente incompleto',p:'8',i:'4',nr:'Local',c:'Revisión el día previo',q:'Cirugía'},{r:'Caída de energía eléctrica sin transferencia a planta de emergencia',p:'2',i:'10',nr:'Estatal',c:'',q:''},{r:'Extravío de pieza de patología por etiquetado manual',p:'3',i:'7',nr:'Local',c:'Doble verificación',q:'Enfermería'},{r:'Desabasto de ropa quirúrgica',p:'4',i:'3',nr:'Local',c:'',q:'Servicios Generales'}]}},
+ a3:{name:'Informe A3',tag:'Comunicar',when:'Debes presentar a la Dirección o a un comité todo el problema en una sola hoja.',next:'pdca',g:gA3,a:aA3,
+  fields:A3B.map(([k,n,p])=>f(k,`${n} (${p.toLowerCase()})`,'area')),lists:[],
+  ex:{contexto:'El tiempo de espera en Urgencias es la primera causa de queja en el buzón del hospital.',situacion:'Mediana de espera para pacientes amarillos: 74 minutos en octubre (n=412). 61% de las esperas largas ocurre entre 10 y 14 h.',meta:'Reducir la mediana a 45 minutos antes del 31 de enero.',causas:'Validadas con datos: un solo consultorio en horario pico; el triage se detiene cuando la enfermera apoya en choque. Descartada: falta de camillas.',contramedidas:'Abrir segundo consultorio de 10 a 14 h. Enfermera de triage exclusiva.',plan:'Segundo consultorio: Jefe de Urgencias, 24/11. Rol de triage: Jefatura de Enfermería, 01/12. Medición semanal: Calidad.',resultados:'',estandar:''}},
+ tablero:{name:'Tablero de indicadores',tag:'Seguimiento',when:'Das seguimiento a resultados en el tiempo y quieres ver dónde actuar.',next:'w2h',g:gTablero,a:aTablero,
+  fields:[f('periodo','Periodos que cubre (por ejemplo, mayo a octubre)')],
+  lists:[{k:'ind',l:'Indicadores',one:'Indicador',cols:[f('n','Indicador','text',{full:1}),f('meta','Meta','num'),f('lim','Límite de alerta','num'),f('s','Sentido','sel',{o:['Mayor es mejor','Menor es mejor']}),f('v','Valores por periodo, separados por coma','text',{full:1}),f('q','Responsable')]}],
+  ex:{periodo:'mayo a octubre',ind:[{n:'Apego a higiene de manos (%)',meta:80,lim:70,s:'Mayor es mejor',v:'58, 61, 66, 70, 74, 76',q:'UVEH'},{n:'Tasa de IAAS por 100 egresos',meta:4,lim:6,s:'Menor es mejor',v:'5.1, 4.8, 6.4, 6.9, 7.2, 6.6',q:'UVEH'},{n:'Cirugías canceladas (%)',meta:8,lim:12,s:'Menor es mejor',v:'9, 8, 7, 8, 7, 6',q:'Jefe de Quirófano'},{n:'Expedientes completos MECIC (%)',meta:90,lim:80,s:'Mayor es mejor',v:'93, 92, 92, 91, 91, 90',q:''}]}},
+ auditoria:{name:'Plan de auditoría y lista de verificación',tag:'Verificar',when:'Vas a revisar si un proceso cumple con su norma o procedimiento.',next:'w2h',g:gAuditoria,a:aAuditoria,
+  fields:[f('objetivo','Objetivo','area'),f('alcance','Alcance','area'),f('criterios','Criterios (norma, procedimiento)','area'),f('equipo','Equipo auditor'),f('agenda','Fecha y agenda'),f('auditados','Auditados')],
+  lists:[{k:'chk',l:'Lista de verificación',one:'Requisito',cols:[f('req','Requisito','text',{full:1}),f('preg','Pregunta abierta','text',{full:1}),f('ev','Evidencia esperada'),f('res','Resultado','sel',{o:['No evaluado','Conforme','Observación','No conformidad']}),f('h','Hallazgo (hecho y evidencia)','text',{full:1})]}],
+  ex:{objetivo:'Verificar la conformidad del expediente clínico en Medicina Interna',alcance:'Egresos de octubre, 20 expedientes',criterios:'NOM-004-SSA3-2012 y procedimiento interno de expediente clínico',equipo:'Auditora líder: Gestora de Calidad. Auditor: Subdirección Médica',agenda:'18/11, 09:00 apertura, 09:30 a 12:30 revisión, 13:00 cierre',auditados:'Jefa de servicio, médicos adscritos, enfermería',chk:[{req:'Historia clínica completa',preg:'¿Cómo se asegura que la historia clínica quede completa al ingreso?',ev:'Historia clínica firmada',res:'Conforme',h:''},{req:'Notas de evolución diarias',preg:'¿Quién elabora la nota en fin de semana?',ev:'Nota por día de estancia',res:'No conformidad',h:'6 de 20 expedientes sin nota de evolución en sábado o domingo'},{req:'Consentimiento informado',preg:'¿Cuándo y quién recaba el consentimiento?',ev:'Formato con nombre y firma',res:'Observación',h:'3 consentimientos sin nombre completo del médico'},{req:'Nota de egreso',preg:'¿Qué incluye la nota de egreso?',ev:'Nota con diagnóstico y plan',res:'Conforme',h:''},{req:'Indicaciones médicas legibles',preg:'¿Cómo se manejan las indicaciones verbales?',ev:'Indicaciones con fecha, hora y firma',res:'No evaluado',h:''}]}}
+};
+const ORDER=['ishikawa','porques','pareto','w2h','riesgos','a3','pdca','tablero','auditoria','cincoS'];
+
+/* ---------- cuestionario ---------- */
+const QUIZ=[
+ {q:'¿Qué necesitas hacer ahora?',o:[['Entender por qué ocurre un problema',{ishikawa:3,porques:3,a3:1}],['Decidir por dónde empezar entre varios problemas o causas',{pareto:4,riesgos:1}],['Definir acciones con responsables y fechas',{w2h:4,pdca:1}],['Anticipar lo que puede salir mal',{riesgos:4}],['Dar seguimiento a resultados',{tablero:4,pdca:1}],['Revisar si un proceso cumple',{auditoria:4}],['Ordenar y mantener un área física',{cincoS:5}],['Conducir una mejora de principio a fin',{pdca:3,a3:3}]]},
+ {q:'¿Qué datos tienes a la mano?',o:[['Conteos por tipo o causa',{pareto:3}],['Mediciones a lo largo del tiempo',{tablero:3,pdca:1}],['Principalmente la experiencia del equipo',{ishikawa:2,porques:2,riesgos:1}],['Documentos y registros del proceso',{auditoria:2,porques:1}]]},
+ {q:'¿Cómo es la situación?',o:[['Un evento puntual con una secuencia clara',{porques:3}],['Un problema recurrente con muchas causas posibles',{ishikawa:3,pareto:1,a3:1}],['Todavía no ocurre; es un riesgo',{riesgos:3}],['No hay problema; quiero verificar o mantener',{auditoria:2,tablero:2,cincoS:1}],['La causa ya se conoce; falta actuar',{w2h:3,pdca:2}]]},
+ {q:'¿Quién va a participar o a recibir el resultado?',o:[['Yo o un grupo pequeño',{porques:1,w2h:1}],['Un equipo de varias áreas y turnos',{ishikawa:2,riesgos:1}],['La Dirección o un comité',{a3:3,tablero:1,pareto:1}]]},
+ {q:'¿Qué entregable esperas?',o:[['Un diagrama de causas',{ishikawa:2,porques:1}],['Una priorización',{pareto:2,riesgos:2}],['Un plan de acción',{w2h:3}],['Un resumen de una página',{a3:3}],['Un tablero con semáforos',{tablero:3}],['Un informe de cumplimiento',{auditoria:3}],['Un ciclo de mejora documentado',{pdca:3}],['Una evaluación del área con puntaje',{cincoS:3}]]}
+];
+function rankQuiz(ans){const sc={},why={};ORDER.forEach(k=>{sc[k]=0;why[k]=[]});ans.forEach((ai,qi)=>{const[lab,pts]=QUIZ[qi].o[ai];for(const k in pts){sc[k]+=pts[k];why[k].push(lab.toLowerCase())}});
+  return ORDER.map(k=>({k,s:sc[k],why:why[k]})).sort((a,b)=>b.s-a.s)}
+
+/* ---------- reporte ---------- */
+function analysisHtml(o,tool){const sec=(t,a,c)=>a.length?`<h3>${t}</h3><ul${c?` class="${c}"`:''}>${a.map(x=>`<li>${esc(x)}</li>`).join('')}</ul>`:'';
+  return o.res.map(x=>`<p><b>${esc(x)}</b></p>`).join('')+sec('Hallazgos',o.hal)+sec('Alertas de calidad del análisis',o.al,'al')+sec('Recomendaciones',o.rec)+`<h3>Siguiente paso sugerido</h3><p>Continuar con <b>${TOOLS[tool.next].name}</b>: ${esc(TOOLS[tool.next].when)}</p>`}
+function analysisText(o,tool,meta){const L=[`${tool.name}${meta.titulo?' — '+meta.titulo:''}`,''];o.res.forEach(x=>L.push(x));const s=(t,a)=>{if(a.length){L.push('',t+':');a.forEach(x=>L.push('- '+x))}};s('Hallazgos',o.hal);s('Alertas',o.al);s('Recomendaciones',o.rec);L.push('','Siguiente paso sugerido: '+TOOLS[tool.next].name);return L.join('\n')}
+function buildReport(id,d,meta){const t=TOOLS[id],o=t.a(d);
+  return`<div class="paper"><div class="ph"><div><div class="pk">${esc(t.name)}</div><h1>${esc(meta.titulo||'Análisis sin título')}</h1><div class="pt">${esc(meta.inst||'')}</div></div><dl class="pm"><dt>Área o servicio</dt><dd>${esc(meta.area||'—')}</dd><dt>Elaboró</dt><dd>${esc(meta.resp||'—')}</dd><dt>Fecha</dt><dd>${esc(dmy(meta.fecha))}</dd></dl></div><h2>Herramienta gráfica</h2>${t.g(d)}<h2>Reporte de análisis</h2>${analysisHtml(o,t)}<div class="firm"><div>Elaboró</div><div>Revisó</div></div><p class="pie">Generado con el Taller de Herramientas de Calidad. El análisis automático se basa en reglas y no sustituye el juicio del equipo.</p></div>`}
+function exportHtml(id,d,meta){return`<!DOCTYPE html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>${esc(TOOLS[id].name)} - ${esc(meta.titulo||'')}</title><style>body{margin:0;padding:16px;background:#fff}.paper{max-width:960px;margin:0 auto}${PAPER_CSS}@page{margin:14mm}</style></head><body>${buildReport(id,d,meta)}</body></html>`}
+
+/* ---------- aplicación ---------- */
+if(typeof document!=='undefined'){
+const $=s=>document.querySelector(s),KEY='taller_calidad_v1';
+let st={view:'home',tool:null,q:0,ans:[],meta:{titulo:'',inst:'',area:'',resp:'',fecha:today()},data:{},isEx:{},ids:{},url:'',auth:null,pend:''};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.meta)st=Object.assign(st,s)}catch(e){}
+if(!TOOLS[st.tool]&&st.view!=='quiz')st.view='home';
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}};
+const clone=o=>JSON.parse(JSON.stringify(o));
+const api=()=>(SHEETS_URL||st.url||'').trim();
+async function call(body){const x=await fetch(api(),{method:'POST',headers:{'Content-Type':'text/plain;charset=utf-8'},body:JSON.stringify(Object.assign({token:st.auth?st.auth.token:''},body))}),j=await x.json();
+  if(j.auth===false){st.auth=null;save();render();toast('Tu sesión terminó. Vuelve a entrar; tu avance sigue en este dispositivo.')}return j}
+const uid=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+async function syncSave(quiet){const u=api(),k=st.tool;
+  if(!u||!st.auth)return;
+  if(st.isEx[k]){if(!quiet)toast('El ejemplo no se guarda. Empieza en blanco con tu caso.');return}
+  if(!st.ids[k]){st.ids[k]=uid();save()}
+  const t=TOOLS[k],d=st.data[k],o=t.a(d),m=st.meta;
+  const rec={id:st.ids[k],tool:k,herramienta:t.name,titulo:m.titulo,inst:m.inst,area:m.area,resp:m.resp,fecha:m.fecha,resumen:o.res.join(' '),hallazgos:o.hal.join(' | '),alertas:o.al.join(' | '),datos:JSON.stringify({meta:m,data:d})};
+  try{const j=await call({action:'save',rec});if(j.auth===false)return;if(!j.ok)throw new Error(j.error);toast('Guardado en Google Sheets')}
+  catch(e){toast('No se pudo guardar en Sheets. Tu avance sigue en este dispositivo; revisa la conexión y vuelve a guardar.')}}
+async function loadList(){const el=$('#saved');if(!el)return;
+  el.innerHTML='<p class="hint">Cargando análisis guardados…</p>';
+  try{const j=await call({action:'list'});if(j.auth===false)return;if(!j.ok)throw new Error(j.error);const e2=$('#saved');if(!e2)return;
+    e2.innerHTML=j.rows.length?'<div class="saved">'+j.rows.map(w=>`<button class="sv" data-load="${esc(w.id)}"><span><b>${esc(w.titulo||'Sin título')}</b><br><small>${esc(w.herramienta)}${w.area?' · '+esc(w.area):''}${w.usuario?' · '+esc(w.usuario):''}</small></span><small>${esc(w.actualizado)}</small></button>`).join('')+'</div>':'<p class="hint">Todavía no hay análisis guardados.</p>'}
+  catch(e){const e2=$('#saved');if(e2)e2.innerHTML='<p class="hint">No se pudo leer la hoja. Revisa tu conexión a internet.</p><div class="row" style="margin-top:8px"><button class="btn ghost sm" data-act="relist">Reintentar</button></div>'}}
+async function loadRec(id){const u=api();toast('Abriendo…');
+  try{const j=await call({action:'get',id});if(j.auth===false)return;if(!j.ok)throw new Error(j.error);const k=j.rec.tool,z=JSON.parse(j.rec.datos);if(!TOOLS[k])throw new Error('x');
+    st.data[k]=z.data;st.meta=Object.assign(st.meta,z.meta);st.isEx[k]=false;st.ids[k]=id;open(k)}
+  catch(e){toast('No se pudo abrir ese análisis.')}}
+const allF=t=>[...(t.fields||[]),...(t.fields2||[])].filter(x=>x.k);
+function blankNew(k){st.data[k]=blank(k);st.isEx[k]=false;st.ids[k]=uid();st.meta.titulo='';st.meta.fecha=today()}
+function blank(id){const t=TOOLS[id],o={};allF(t).forEach(x=>o[x.k]=x.t==='sel'?x.o[0]:'');t.lists.forEach(l=>o[l.k]=[blankRow(l)]);return o}
+const blankRow=l=>{const r={};l.cols.forEach(c=>r[c.k]=c.t==='sel'?c.o[0]:'');return r};
+function open(id){st.tool=id;if(!st.data[id]){st.data[id]=clone(TOOLS[id].ex);st.isEx[id]=true}const d=st.data[id],b=blank(id);for(const k in b)if(d[k]===undefined)d[k]=b[k];st.view='fill';go()}
+function go(){save();render();window.scrollTo(0,0)}
+function toast(m){const t=$('#toast');t.textContent=m;t.hidden=false;clearTimeout(toast.t);toast.t=setTimeout(()=>t.hidden=true,3200)}
+const style=document.createElement('style');style.textContent=PAPER_CSS;document.head.appendChild(style);
+let dl=null;if(window.claude&&typeof window.claude.use==='function')window.claude.use('downloads').then(x=>{dl=x;const b=$('#dlb');if(b&&dl)b.hidden=false}).catch(()=>{});
+
+function ctl(x,path,val){const id='f_'+path.replace(/\./g,'_'),a=`id="${id}" data-p="${path}"`;let c;
+  if(x.t==='area')c=`<textarea ${a}>${esc(val)}</textarea>`;
+  else if(x.t==='sel')c=`<select ${a}>${x.o.map(o=>`<option${String(val)===o?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  else c=`<input ${a} type="${x.t==='date'?'date':'text'}"${x.t==='num'?' inputmode="decimal"':''} value="${esc(val)}">`;
+  return`<div class="f${x.full||x.t==='area'?' full':''}"><label for="${id}">${esc(x.l)}</label>${c}</div>`}
+function fieldsHtml(fs,d){let h='',open=false;fs.forEach(x=>{if(x.h){if(open)h+='</div>';h+=`<div class="sec-h">${esc(x.h)}</div><div class="grid">`;open=true}else{if(!open){h+='<div class="grid">';open=true}h+=ctl(x,x.k,d[x.k])}});return h+(open?'</div>':'')}
+function listHtml(l,d){const rows=d[l.k]||[];return`<div class="sec-h">${esc(l.l)}</div><div class="list">${rows.map((r,i)=>`<div class="item"><div class="item-h"><span>${esc(l.one)} ${i+1}</span><button type="button" class="x" data-del="${l.k}.${i}">Quitar</button></div><div class="grid">${l.cols.map(c=>ctl(c,`${l.k}.${i}.${c.k}`,r[c.k])).join('')}</div></div>`).join('')}<div><button type="button" class="btn sec sm" data-add="${l.k}">Agregar ${esc(l.one.toLowerCase())}</button></div></div>`}
+
+function vSetup(){return`<section class="card" style="max-width:520px"><h1>Conectar con Google Sheets</h1><p class="lead">Pega la URL de la aplicación web de Apps Script (termina en /exec).</p><div class="f" style="margin-top:14px"><label for="cfgurl">URL de la aplicación web</label><input id="cfgurl" type="url" placeholder="https://script.google.com/macros/s/…/exec"></div><div class="row" style="margin-top:12px"><button class="btn" data-act="cfg">Conectar</button></div></section>`}
+function vLogin(){return st.pend?`<section class="card" style="max-width:520px"><h1>Escribe tu código</h1><p class="lead">Si <b>${esc(st.pend)}</b> está autorizado, recibirá un código de 6 dígitos. Vence en 10 minutos; revisa también la carpeta de spam.</p><div class="f" style="margin-top:14px"><label for="lgcode">Código de acceso</label><input id="lgcode" inputmode="numeric" autocomplete="one-time-code" maxlength="6" placeholder="000000"></div><div class="row" style="margin-top:12px"><button class="btn" data-act="login">Entrar</button><button class="btn ghost" data-act="relog">Usar otro correo</button></div></section>`
+  :`<section class="card" style="max-width:520px"><h1>Acceso para personal autorizado</h1><p class="lead">Escribe tu correo. Te enviaremos un código para confirmar que eres tú.</p><div class="f" style="margin-top:14px"><label for="lgmail">Correo electrónico</label><input id="lgmail" type="email" autocomplete="email" placeholder="nombre@gmail.com"></div><div class="row" style="margin-top:12px"><button class="btn" data-act="code">Enviar código</button>${SHEETS_URL?'':'<button class="btn ghost" data-act="uncfg">Cambiar conexión</button>'}</div></section>`}
+function vHome(){return`<section><h1>¿Qué herramienta de calidad necesitas?</h1><p class="lead">Responde 5 preguntas y te recomiendo la más adecuada. Después la llenas paso a paso y obtienes el gráfico y el reporte de análisis.</p><div class="row" style="margin-top:14px"><button class="btn" data-act="quiz">Ayúdame a elegir</button>${st.tool?`<button class="btn sec" data-open="${st.tool}">Continuar con ${esc(TOOLS[st.tool].name)}</button>`:''}</div></section>
+<section><h2 style="font-size:17px;margin-bottom:10px">Análisis guardados en Google Sheets</h2><div id="saved"></div></section>
+<section><h2 style="font-size:17px;margin-bottom:10px">O entra directo a una herramienta</h2><div class="tools">${ORDER.map(k=>`<button class="tool" data-open="${k}"><span class="tag">${TOOLS[k].tag}${st.data[k]&&!st.isEx[k]?' · con avance':''}</span><b>${TOOLS[k].name}</b><small>${TOOLS[k].when}</small></button>`).join('')}</div></section>`}
+function vQuiz(){if(st.q>=QUIZ.length){const r=rankQuiz(st.ans),b=r[0],t=TOOLS[b.k],n1=TOOLS[t.next],n2=TOOLS[n1.next];
+  return`<section><h1>Mi recomendación</h1><div class="rank" style="margin-top:14px"><div class="card best"><span class="tag">Mejor opción</span><h2>${t.name}</h2><p class="why">${t.when}<br>Coincide con tus respuestas: ${b.why.slice(0,3).join('; ')}.</p><button class="btn" data-open="${b.k}">Usar esta herramienta</button></div>
+  ${r.slice(1,3).filter(x=>x.s>0).map(x=>`<div class="card"><span class="tag">Alternativa</span><h2 style="font-size:17px">${TOOLS[x.k].name}</h2><p class="why">${TOOLS[x.k].when}</p><button class="btn sec sm" data-open="${x.k}">Usar esta</button></div>`).join('')}</div>
+  <p class="hint" style="margin-top:14px">Secuencia habitual: ${t.name} → ${n1.name} → ${n2.name}.</p><div class="row" style="margin-top:12px"><button class="btn ghost" data-act="quiz">Repetir preguntas</button></div></section>`}
+  const q=QUIZ[st.q];return`<section><p class="hint">Pregunta ${st.q+1} de ${QUIZ.length}</p><div class="bar"><i style="width:${st.q/QUIZ.length*100}%"></i></div><h1>${q.q}</h1><div class="opts">${q.o.map((o,i)=>`<button class="opt" data-ans="${i}">${o[0]}</button>`).join('')}</div><div class="row" style="margin-top:14px">${st.q?'<button class="btn ghost" data-act="back">Pregunta anterior</button>':''}</div></section>`}
+function vFill(){const t=TOOLS[st.tool],d=st.data[st.tool],m=st.meta;
+  return`<section><span class="tag">${t.tag}</span><h1>${t.name}</h1><p class="lead">${t.when}</p></section>
+  ${st.isEx[st.tool]?`<div class="banner"><span>Estás viendo un <b>ejemplo</b>. Edítalo o empieza con tu caso.</span><button class="btn sm" data-act="blank">Empezar en blanco</button></div>`:''}
+  <form id="form" class="card" autocomplete="off"><div class="grid">${ctl(f('titulo','Título del análisis','text',{full:1}),'@titulo',m.titulo)}${ctl(f('inst','Institución'),'@inst',m.inst)}${ctl(f('area','Área o servicio'),'@area',m.area)}${ctl(f('resp','Elaboró'),'@resp',m.resp)}${ctl(f('fecha','Fecha','date'),'@fecha',m.fecha)}</div>
+  ${fieldsHtml(t.fields,d)}${t.lists.map(l=>listHtml(l,d)).join('')}${t.fields2?fieldsHtml([{h:'Conclusión'},...t.fields2],d):''}</form>
+  <section><h2 style="font-size:17px;margin-bottom:8px">Vista previa</h2><div class="sheet-wrap"><div class="paper" id="prev">${t.g(d)}</div></div></section>
+  <div class="row"><button class="btn" data-act="report">Generar reporte de análisis</button>${st.isEx[st.tool]?'':'<button class="btn sec" data-act="save">Guardar en Sheets</button><button class="btn ghost" data-act="new">Nuevo análisis en blanco</button><button class="btn ghost" data-act="example">Ver ejemplo</button>'}<button class="btn ghost" data-act="home">Cambiar de herramienta</button></div>`}
+function vReport(){return`<div class="row"><button class="btn sec" data-act="edit">Volver a editar</button><button class="btn" id="dlb" data-act="dl"${dl?'':' hidden'}>Descargar reporte (HTML para imprimir)</button><button class="btn" data-act="print">Imprimir o guardar PDF</button><button class="btn ghost" data-act="copy">Copiar análisis como texto</button></div>
+  <div class="sheet-wrap" id="rep">${buildReport(st.tool,st.data[st.tool],st.meta)}</div>
+  <p class="hint">Al generar el reporte se guarda una copia en Google Sheets si la conexión está configurada.</p>
+  <div class="row"><button class="btn sec" data-open="${TOOLS[st.tool].next}">Continuar con ${TOOLS[TOOLS[st.tool].next].name}</button><button class="btn ghost" data-act="home">Elegir otra herramienta</button></div>`}
+function render(){const v=!api()?'setup':!st.auth?'login':st.view,n=v==='home'||v==='quiz'?0:v==='fill'?1:2;
+  $('#steps').innerHTML=['1 Elegir','2 Llenar','3 Reporte'].map((s,i)=>`<span class="${i===n?'on':''}">${s}</span>`).join('')+(st.auth&&api()?`<button class="x" data-act="logout" title="${esc(st.auth.email)}">Salir</button>`:'');
+  if(v==='setup'||v==='login'){$('#steps').innerHTML='';$('#app').innerHTML=v==='setup'?vSetup():vLogin();return}
+  $('#app').innerHTML=v==='quiz'?vQuiz():v==='fill'?vFill():v==='report'?vReport():vHome();if(v==='home')loadList()}
+
+let pt;function setP(p,v){if(p[0]==='@'){st.meta[p.slice(1)]=v;return}const ks=p.split('.');let o=st.data[st.tool];for(let i=0;i<ks.length-1;i++)o=o[ks[i]];o[ks[ks.length-1]]=v}
+function onEdit(e){const p=e.target.dataset&&e.target.dataset.p;if(!p)return;setP(p,e.target.value);save();clearTimeout(pt);pt=setTimeout(()=>{const el=$('#prev');if(el)el.innerHTML=TOOLS[st.tool].g(st.data[st.tool])},350)}
+document.addEventListener('input',onEdit);document.addEventListener('change',onEdit);
+document.addEventListener('submit',e=>e.preventDefault());
+$('#home').addEventListener('click',()=>{st.view='home';go()});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id&&/^(lgmail|lgcode|cfgurl)$/.test(e.target.id)){const b=e.target.closest('section').querySelector('.btn');if(b)b.click()}});
+document.addEventListener('click',async e=>{const b=e.target.closest('button');if(!b)return;const D=b.dataset;
+  if(D.open)return open(D.open);
+  if(D.load)return loadRec(D.load);
+  if(D.ans!==undefined){st.ans[st.q]=+D.ans;st.q++;return go()}
+  if(D.add){const t=TOOLS[st.tool],l=t.lists.find(x=>x.k===D.add);st.data[st.tool][l.k].push(blankRow(l));save();const y=window.scrollY;render();window.scrollTo(0,y);return}
+  if(D.del){const[k,i]=D.del.split('.');st.data[st.tool][k].splice(+i,1);save();const y=window.scrollY;render();window.scrollTo(0,y);return}
+  switch(D.act){
+   case'quiz':st.view='quiz';st.q=0;st.ans=[];return go();
+   case'back':st.q=Math.max(0,st.q-1);return go();
+   case'home':st.view='home';return go();
+   case'edit':st.view='fill';return go();
+   case'report':st.view='report';go();syncSave(true);return;
+   case'save':return syncSave(false);
+   case'print':window.print();return;
+   case'new':if(!window.confirm('Se limpiará el formulario para iniciar un análisis nuevo. Si no lo has guardado en Sheets, se perderá. ¿Continuar?'))return;blankNew(st.tool);return go();
+   case'cfg':{const v=($('#cfgurl').value||'').trim();if(!/^https:\/\/script\.google\.com\/.+\/exec$/.test(v))return toast('La URL debe empezar con https://script.google.com y terminar en /exec');st.url=v;return go()}
+   case'uncfg':st.url='';st.pend='';return go();
+   case'code':{const m=($('#lgmail').value||'').trim().toLowerCase();if(!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(m))return toast('Escribe un correo válido.');b.disabled=true;
+     try{const j=await call({action:'code',email:m});if(!j.ok)throw new Error(j.error||'');st.pend=m;go()}catch(x){b.disabled=false;toast(x.message&&!/fetch|JSON/i.test(x.message)?x.message:'No se pudo enviar el código. Revisa tu conexión.')}return}
+   case'login':{const c=($('#lgcode').value||'').trim();if(!/^\d{6}$/.test(c))return toast('El código tiene 6 dígitos.');b.disabled=true;
+     try{const j=await call({action:'login',email:st.pend,code:c});if(!j.ok)throw new Error(j.error||'');st.auth={token:j.token,email:j.email,nombre:j.nombre};st.pend='';if(!st.meta.resp&&j.nombre)st.meta.resp=j.nombre;st.view='home';go()}catch(x){b.disabled=false;toast(x.message&&!/fetch|JSON/i.test(x.message)?x.message:'No se pudo verificar. Revisa tu conexión.')}return}
+   case'relog':st.pend='';return go();
+   case'logout':if(!window.confirm('Al salir se borra de este dispositivo lo que no hayas guardado en Sheets. ¿Salir?'))return;try{await call({action:'logout'})}catch(x){}st.auth=null;st.data={};st.isEx={};st.ids={};st.tool=null;st.view='home';return go();
+   case'relist':return loadList();
+   case'blank':blankNew(st.tool);return go();
+   case'example':st.data[st.tool]=clone(TOOLS[st.tool].ex);st.isEx[st.tool]=true;open(st.tool);return;
+   case'copy':try{await navigator.clipboard.writeText(analysisText(TOOLS[st.tool].a(st.data[st.tool]),TOOLS[st.tool],st.meta));toast('Análisis copiado')}catch(x){toast('No se pudo copiar. Selecciona el texto del reporte y cópialo a mano.')}return;
+   case'dl':if(!dl)return toast('La descarga no está disponible en esta vista.');try{await dl.save({filename:`${st.tool}-${st.meta.fecha||today()}.html`,data:exportHtml(st.tool,st.data[st.tool],st.meta)});toast('Reporte guardado')}catch(x){toast(x&&x.code==='declined'?'Descarga cancelada':'No se pudo descargar. Usa "Copiar análisis como texto".')}return;
+  }});
+render();
+}
+</script>
+</body>
+</html>
